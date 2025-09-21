@@ -1,0 +1,17 @@
+# Virtual environment
+venv/
+.venv/
+
+# Dataset
+Flickr8k_Dataset/
+Flickr8k_text/
+
+# Model files
+*.h5
+*.p
+descriptions.txt
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
