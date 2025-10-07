@@ -26,68 +26,68 @@ def load_doc(filename):
     file.close()
     return text
 
-def all_img_captons(filename):
-    file = load_doc(filename)
-    captions = file.split('\n')
-    descriptions = {}
-    for caption in captions[:-1]:
-        img, caption = caption.split('\t')
-        if img[:-2] not in descriptions:
-            descriptions[img[:-2]] = [caption]
-        else:
-            descriptions[img[:-2]].append(caption)
-    return descriptions
+# def all_img_captons(filename):
+#     file = load_doc(filename)
+#     captions = file.split('\n')
+#     descriptions = {}
+#     for caption in captions[:-1]:
+#         img, caption = caption.split('\t')
+#         if img[:-2] not in descriptions:
+#             descriptions[img[:-2]] = [caption]
+#         else:
+#             descriptions[img[:-2]].append(caption)
+#     return descriptions
 
 
-def clean_text(captions):
-    table = str.maketrans('', '', string.punctuation)
-    for img, caps in captions.items():
-        for i, img_caption in enumerate(caps):
-            img_caption.replace("-", " ")
-            desc = img_caption.split()
-            desc = [word.lower() for word in desc]
-            desc = [w.translate(table) for w in desc]
-            desc = [word for word in desc if len(word)>1]
-            desc = [word for word in desc if word.isalpha()]
-            img_caption = ' '.join(desc)
-            captions[img][i] = img_caption
+# def clean_text(captions):
+#     table = str.maketrans('', '', string.punctuation)
+#     for img, caps in captions.items():
+#         for i, img_caption in enumerate(caps):
+#             img_caption.replace("-", " ")
+#             desc = img_caption.split()
+#             desc = [word.lower() for word in desc]
+#             desc = [w.translate(table) for w in desc]
+#             desc = [word for word in desc if len(word)>1]
+#             desc = [word for word in desc if word.isalpha()]
+#             img_caption = ' '.join(desc)
+#             captions[img][i] = img_caption
 
-    return captions
-
-
-def text_vocabulary(descriptions):
-    vocab = set()
-    for key in descriptions.keys():
-        [vocab.update(d.split()) for d in descriptions[key]]
-    return vocab
+#     return captions
 
 
-def save_descriptions(descriptions, filename):
-    lines = list()
-    for key, desc_list in descriptions.items():
-        for desc in desc_list:
-            lines.append(key + '\t' + desc)
+# def text_vocabulary(descriptions):
+#     vocab = set()
+#     for key in descriptions.keys():
+#         [vocab.update(d.split()) for d in descriptions[key]]
+#     return vocab
 
-    data = '\n'.join(lines)
-    file = open(filename, 'w')
-    file.write(data)
-    file.close()
+
+# def save_descriptions(descriptions, filename):
+#     lines = list()
+#     for key, desc_list in descriptions.items():
+#         for desc in desc_list:
+#             lines.append(key + '\t' + desc)
+
+#     data = '\n'.join(lines)
+#     file = open(filename, 'w')
+#     file.write(data)
+#     file.close()
 
 
 dataset_text = 'Flickr8k_text'
 dataset_images = 'Flickr8k_Dataset/Flicker8k_Dataset'
 
-filename = dataset_text + '/Flickr8k.token.txt'
-descriptions = all_img_captons(filename)
-print('Length of descriptions = ', len(descriptions))
+# filename = dataset_text + '/Flickr8k.token.txt'
+# descriptions = all_img_captons(filename)
+# print('Length of descriptions = ', len(descriptions))
 
 
-clean_descriptions = clean_text(descriptions)
-vocab = text_vocabulary(clean_descriptions)
-print('Length of vocabulary = ', len(vocab))
+# clean_descriptions = clean_text(descriptions)
+# vocab = text_vocabulary(clean_descriptions)
+# print('Length of vocabulary = ', len(vocab))
 
 
-save_descriptions(clean_descriptions, 'descriptions.txt')
+# save_descriptions(clean_descriptions, 'descriptions.txt')
 
 
 def download_with_retry(url, filename, max_retries=3):
@@ -104,30 +104,30 @@ def download_with_retry(url, filename, max_retries=3):
 weight_url = "https://storage.googleapis.com/tensorflow/keras-applications/xception/xception_weights_tf_dim_ordering_tf_kernels_notop.h5"
 weights_path = download_with_retry(weight_url, 'xception_weights.h5')
 
-model = Xception(include_top=False, pooling='avg', weights= weights_path)
+# model = Xception(include_top=False, pooling='avg', weights= weights_path)
 
-def extract_features(directory):
-    model = Xception(include_top=False, pooling='avg', weights=weights_path)
-    features = {}
-    valid_images = {".jpg", ".jpeg", ".png"}
-    for img in tqdm(os.listdir(directory)):
-        ext = os.path.splitext(img)[1].lower()
-        if ext not in valid_images:
-            continue
-        file_name = directory + '/' + img
-        image = Image.open(file_name)
-        image = image.resize((299, 299))
-        image = np.expand_dims(image, axis=0)
-        image = image/127.5
-        image = image - 1.0
-        feature = model.predict(image)
-        features[img] = feature
+# def extract_features(directory):
+#     model = Xception(include_top=False, pooling='avg', weights=weights_path)
+#     features = {}
+#     valid_images = {".jpg", ".jpeg", ".png"}
+#     for img in tqdm(os.listdir(directory)):
+#         ext = os.path.splitext(img)[1].lower()
+#         if ext not in valid_images:
+#             continue
+#         file_name = directory + '/' + img
+#         image = Image.open(file_name)
+#         image = image.resize((299, 299))
+#         image = np.expand_dims(image, axis=0)
+#         image = image/127.5
+#         image = image - 1.0
+#         feature = model.predict(image)
+#         features[img] = feature
 
-    return features
+#     return features
 
-features = extract_features(dataset_images)
-dump(features, open('features.p', 'wb'))
-# --------------------------------
+# features = extract_features(dataset_images)
+# dump(features, open('features.p', 'wb'))
+#--------------------------------
 
 features = load(open('features.p', 'rb'))
 print('Length of features = ', len(features))
